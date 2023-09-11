@@ -1,6 +1,6 @@
 import CardProduct from "../components/Fragments/CardProduct.jsx";
 import Button from "../components/Elements/Button/index.jsx";
-import {useMemo, useState} from "react";
+import {useEffect, useState} from "react";
 import {formatCurrency} from "../utils/formatter.js";
 
 const products = [
@@ -39,6 +39,21 @@ const email = localStorage.getItem("email")
 
 const ProductPage = () => {
 	const [cartItems, setCartItems] = useState([]);
+	const [totalPrice, setTotalPrice] = useState(0);
+
+	// Load cart from local storage on component mount
+	useEffect(() => {
+		setCartItems(JSON.parse(localStorage.getItem("cart")) || []);
+	}, []);
+
+	// Update local storage whenever cartItems change
+	useEffect(() => {
+		if (cartItems.length > 0) {
+			const total = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+			setTotalPrice(total);
+			localStorage.setItem("cart", JSON.stringify(cartItems));
+		}
+	}, [cartItems]);
 
 	const handleLogout = () => {
 		localStorage.removeItem("email")
@@ -82,13 +97,6 @@ const ProductPage = () => {
 		);
 
 	};
-
-	const calculatedTotal = useMemo(() => {
-		return cartItems.reduce(
-			(total, item) => total + item.price * item.quantity,
-			0
-		);
-	}, [cartItems]);
 
 	return (
 		<>
@@ -147,7 +155,7 @@ const ProductPage = () => {
 						<div className="border-t pt-4">
 							<div className="flex justify-between">
 								<p className="font-semibold">Total:</p>
-								<p>{formatCurrency(calculatedTotal)}</p>
+								<p>{formatCurrency(totalPrice)}</p>
 							</div>
 							<button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mt-2 w-full">
 								Checkout
