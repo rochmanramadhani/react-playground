@@ -22,14 +22,22 @@ Vite, the blazing fast build tool for modern web development.
    ```bash
     npm install
     ```
+   or
+   ```bash
+   bun run install
+   ```
    
 4. Start the development server:
 
    ```bash
    npm run dev
    ```
+   or
+   ```bash
+   bun run dev
+   ```
    
-5. Open your browser and navigate to http://localhost:3000.
+5. Open your browser and navigate to http://localhost:5173.
 
 ## Feedback
 
