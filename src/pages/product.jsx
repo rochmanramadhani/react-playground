@@ -2,44 +2,46 @@ import CardProduct from "../components/Fragments/CardProduct.jsx";
 import Button from "../components/Elements/Button/index.jsx";
 import {useEffect, useState} from "react";
 import {formatCurrency} from "../utils/formatter.js";
+import {getProducts} from "../services/product.services.js";
 
-const products = [
-	{
-		id: 1,
-		name: "Stylish Shoes",
-		image: "https://images.unsplash.com/photo-1491553895911-0055eca6402d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHNob2VzfGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60",
-		price: 1000000,
-		description: "New shoes, who dis? These stylish shoes will make you the talk of the town. Made from vegan leather."
-	},
-	{
-		id: 2,
-		name: "Stylish Sunglasses",
-		image: "https://images.unsplash.com/photo-1581778571772-11f8c6af4103?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2048&q=80",
-		price: 500000,
-		description: "Protect your eyes from the sun in style with these fashionable sunglasses. They offer both UV protection and a trendy look."
-	},
-	{
-		id: 3,
-		name: "Classic Leather Wallet",
-		image: "https://images.unsplash.com/photo-1627123424574-724758594e93?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8d2FsbGV0fGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60",
-		price: 250000,
-		description: "Upgrade your accessories with this high-quality leather wallet. It features multiple card slots and a coin pocket."
-	},
-	{
-		id: 4,
-		name: "Designer Watch",
-		image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8d2F0Y2h8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60",
-		price: 1500000,
-		description: "Elevate your wrist game with this elegant designer watch. It combines functionality with a timeless design."
-	},
-	// Add more products as needed
-];
+// const products = [
+// 	{
+// 		id: 1,
+// 		name: "Stylish Shoes",
+// 		image: "https://images.unsplash.com/photo-1491553895911-0055eca6402d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHNob2VzfGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60",
+// 		price: 1000000,
+// 		description: "New shoes, who dis? These stylish shoes will make you the talk of the town. Made from vegan leather."
+// 	},
+// 	{
+// 		id: 2,
+// 		name: "Stylish Sunglasses",
+// 		image: "https://images.unsplash.com/photo-1581778571772-11f8c6af4103?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2048&q=80",
+// 		price: 500000,
+// 		description: "Protect your eyes from the sun in style with these fashionable sunglasses. They offer both UV protection and a trendy look."
+// 	},
+// 	{
+// 		id: 3,
+// 		name: "Classic Leather Wallet",
+// 		image: "https://images.unsplash.com/photo-1627123424574-724758594e93?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8d2FsbGV0fGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60",
+// 		price: 250000,
+// 		description: "Upgrade your accessories with this high-quality leather wallet. It features multiple card slots and a coin pocket."
+// 	},
+// 	{
+// 		id: 4,
+// 		name: "Designer Watch",
+// 		image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8d2F0Y2h8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60",
+// 		price: 1500000,
+// 		description: "Elevate your wrist game with this elegant designer watch. It combines functionality with a timeless design."
+// 	},
+// 	// Add more products as needed
+// ];
 
 const email = localStorage.getItem("email")
 
 const ProductPage = () => {
 	const [cartItems, setCartItems] = useState([]);
 	const [totalPrice, setTotalPrice] = useState(0);
+	const [products, setProducts] = useState([]);
 
 	// Load cart from local storage on component mount
 	useEffect(() => {
@@ -54,6 +56,10 @@ const ProductPage = () => {
 			localStorage.setItem("cart", JSON.stringify(cartItems));
 		}
 	}, [cartItems]);
+
+	useEffect(() => {
+		getProducts((data) => setProducts(data));
+	}, []);
 
 	const handleLogout = () => {
 		localStorage.removeItem("email")
@@ -73,7 +79,7 @@ const ProductPage = () => {
 				)
 			);
 		} else {
-			setCartItems([...cartItems, {...item, quantity: 1, name: item.name}]);
+			setCartItems([...cartItems, {...item, quantity: 1, title: item.title}]);
 		}
 	};
 
@@ -116,7 +122,7 @@ const ProductPage = () => {
 					{products.map((product) => (
 						<CardProduct key={product.id}>
 							<CardProduct.Header image={product.image}/>
-							<CardProduct.Body name={product.name}>
+							<CardProduct.Body name={product.title}>
 								{product.description}
 							</CardProduct.Body>
 							<CardProduct.Footer
@@ -132,7 +138,7 @@ const ProductPage = () => {
 						{cartItems.map((item) => (
 							<div key={item.id} className="flex items-center justify-between mb-2">
 								<div>
-									<p className="font-semibold">{item.name}</p>
+									<p className="font-semibold">{item.title}</p>
 									<p className="text-gray-600">Price: {formatCurrency(item.price)}</p>
 								</div>
 								<div className="flex items-center">
